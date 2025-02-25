@@ -30,4 +30,4 @@ JWT - Para autenticação segura dos usuários<br>
 
 
 Figma:<br>
- "https://www.figma.com/design/a3aTQjxjmI5pQOh7HD238j/Untitled?node-id=0-1&t=OrEDtgsbxIxzmEJY-1"target="_blank"
+ "https://www.figma.com/design/a3aTQjxjmI5pQOh7HD238j/Untitled?node-id=0-1&t=OrEDtgsbxIxzmEJY-1
