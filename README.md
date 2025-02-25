@@ -1,28 +1,33 @@
 # Lista-de-tarefas
 Trabalho Programação Web 
 
-Objetivo:
-Criar uma aplicação web simples de Lista de Tarefas que permita aos usuários adicionar, editar, excluir e marcar tarefas como concluídas e um sistema de login para controle de acesso..
+Objetivo:<br>
+ Tem como objetivo facilitar o gerenciamento de atividades diárias dos usuários, permitindo que criem, editem, concluam e excluam tarefas de forma organizada e eficiente.
 
 
 Funcionalidades principais:
 
-Adicionar tarefa
-Excluir tarefa
-Marcar tarefa como concluída
-Visualizar tarefas
+Cadastro e Autenticação de Usuários<br>
+CRUD de Tarefas (Criar, Ler, Atualizar e Excluir)<br>
+Organização por Prioridade ou Categoria<br>
+Marcação de Tarefas como Concluídas<br>
+Filtro e Pesquisa de Tarefas<br>
+<br>
 
-Cadastro de usuário
-Login
+Tecnologias Utilizadas:<br>
+
+Frontend:<br>
+HTML, CSS, JavaScript – Base para estrutura<br>
+React.js – Framework para criar a interface<br>
+TailwindCSS – Para estilização <br>
 
 
-Frontend:
-HTML
-CSS
-JavaScript
-React.js
+Backend:<br> 
+Node.js com Express.js – Para criação da API REST<br>
+PostgreSQL – Banco de dados relacional<br>
+Sequelize – Para facilitar a interação com o banco de dados<br>
+JWT - Para autenticação segura dos usuários<br>
 
-Backend 
-Node.js + Express
-SQLite
-JWT (JSON Web Token)
+
+Figma:<br>
+https://www.figma.com/design/a3aTQjxjmI5pQOh7HD238j/Untitled?node-id=0-1&t=OrEDtgsbxIxzmEJY-1
