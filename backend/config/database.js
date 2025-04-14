@@ -1,20 +1,17 @@
-// config/database.js
-require('dotenv').config();
 const { Sequelize } = require('sequelize');
 
-const sequelize = new Sequelize(
-  process.env.DB_NAME || 'tarefasdb',
-  process.env.DB_USER || 'postgres',
-  process.env.DB_PASS || '1234',
-  {
-    host: process.env.DB_HOST || 'localhost',
-    port: process.env.DB_PORT || 5432,
+const sequelize = new Sequelize('tarefasdb', 'postgres', '1234', {
+    host: 'localhost',
     dialect: 'postgres'
-  }
-);
+});
 
-sequelize.authenticate()
-  .then(() => console.log('Conexão com o PostgreSQL estabelecida com sucesso!'))
-  .catch(err => console.error('Erro ao conectar com o PostgreSQL:', err));
+(async () => {
+    try {
+        await sequelize.authenticate();
+        console.log('Conexão com o banco PostgreSQL realizada com sucesso.');
+    } catch (error) {
+        console.error('Erro ao conectar ao PostgreSQL:', error);
+    }
+})();
 
 module.exports = sequelize;

@@ -1,42 +1,57 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
-const Usuario = require('./usuario');
-const Categoria = require('./categoria');
+const Usuario = require('./usuario_model');
+const Categoria = require('./categoria_model');
 
 const Tarefa = sequelize.define('Tarefa', {
-  titulo: {
-    type: DataTypes.STRING,
-    allowNull: false
-  },
-  descricao: {
-    type: DataTypes.TEXT
-  },
-  data_vencimento: {
-    type: DataTypes.DATE
-  },
-  prioridade: {
-    type: DataTypes.STRING
-  },
-  concluida: {
-    type: DataTypes.BOOLEAN,
-    defaultValue: false
-  },
-  criado_em: {
-    type: DataTypes.DATE,
-    defaultValue: DataTypes.NOW
-  },
-  atualizado_em: {
-    type: DataTypes.DATE,
-    defaultValue: DataTypes.NOW
-  }
+    id: { 
+        type: DataTypes.INTEGER, 
+        autoIncrement: true, 
+        primaryKey: true 
+    },
+    titulo: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    descricao: {
+        type: DataTypes.TEXT,
+        allowNull: true
+    },
+    dataVencimento: {
+        type: DataTypes.DATE,
+        allowNull: true
+    },
+    prioridade: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    status: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false
+    },
+    usuarioId: {
+        type: DataTypes.INTEGER,
+        references: {
+            model: Usuario,
+            key: 'id'
+        }
+    },
+    categoriaId: {
+        type: DataTypes.INTEGER,
+        references: {
+            model: Categoria,
+            key: 'id'
+        }
+    }
 }, {
-  tableName: 'tarefa',
-  timestamps: false
+    tableName: 'tarefas'
 });
 
+// Associações
+Tarefa.belongsTo(Usuario, { foreignKey: 'usuarioId' });
+Usuario.hasMany(Tarefa, { foreignKey: 'usuarioId' });
 
-Tarefa.belongsTo(Usuario, { foreignKey: 'user_id', as: 'usuario' });
-
-Tarefa.belongsTo(Categoria, { foreignKey: 'category_id', as: 'categoria' });
+Tarefa.belongsTo(Categoria, { foreignKey: 'categoriaId' });
+Categoria.hasMany(Tarefa, { foreignKey: 'categoriaId' });
 
 module.exports = Tarefa;
