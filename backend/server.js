@@ -1,10 +1,12 @@
+require('dotenv').config();  
+
 const express = require('express');
 const app = express();
 
-// Importa a instância do Sequelize
+// Importa Sequelize
 const sequelize = require('./config/database');
 
-// Middleware de tratamento de erros
+// tratamento de erros
 const errorMiddleware = require('./middleware/error_middleware');
 
 // Importa as rotas
@@ -13,20 +15,20 @@ const usuarioRoutes = require('./routes/usuario_routes');
 const categoriaRoutes = require('./routes/categoria_routes');
 const tarefaRoutes = require('./routes/tarefa_routes');
 
-// Middlewares para interpretar JSON e formulários
+// Middlewares para interpretar JSON 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-//rotas com seus caminhos base
+// Rotas 
 app.use('/api/autenticacao', autenticacaoRoutes);
 app.use('/api/usuarios', usuarioRoutes);
 app.use('/api/categorias', categoriaRoutes);
 app.use('/api/tarefas', tarefaRoutes);
 
-// tratamento de erros
+// erros
 app.use(errorMiddleware);
 
-// inicia o servidor
+// Inicia o servidor
 sequelize.sync({ alter: true }).then(() => {
     app.listen(process.env.PORT || 3000, () => {
         console.log('Servidor rodando na porta 3000 e tabelas sincronizadas com sucesso.');
