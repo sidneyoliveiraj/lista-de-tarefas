@@ -8,13 +8,12 @@ module.exports = {
       const { usuario, token } = await loginUsuario(email, senha); // Chama o serviço para fazer o login
       res.json({ usuario, token }); // Retorna o usuário e o token
     } catch (error) {
-      next(error); // Passa o erro para o middleware de erro
+      next(error); 
     }
   },
   
   logout: (req, res) => {
-    // A ação de logout geralmente envolve invalidar o token do lado do cliente,
-    // mas o token JWT pode ser mantido no frontend e removido no lado do cliente.
+    
     res.json({ message: "Usuário deslogado com sucesso!" });
   },
   

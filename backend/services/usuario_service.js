@@ -1,17 +1,17 @@
 const Usuario = require('../models/usuario_model');
 const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');  // Importando JWT para gerar o token de login
+const jwt = require('jsonwebtoken');  // Importar JWT para gerar o token de login
 
-// Função para cadastrar um novo usuário
+//cadastrar um novo usuário
 const cadastrarUsuario = async (nome, email, senha) => {
   // Verificar se o email já está cadastrado
   const usuarioExistente = await Usuario.findOne({ where: { email } });
   if (usuarioExistente) throw new Error('Email já cadastrado.');
 
-  // Criptografar a senha
+  // criptografar a senha
   const senhaHash = await bcrypt.hash(senha, 10);
 
-  // Criar novo usuário no banco de dados
+  // criar novo usuário no banco de dados
   const usuario = await Usuario.create({ nome, email, senha: senhaHash });
 
   return usuario;
@@ -39,7 +39,7 @@ const atualizarUsuario = async (usuarioId, nome, email, senhaAtual, novaSenha) =
   const usuario = await Usuario.findByPk(usuarioId);
   if (!usuario) throw new Error('Usuário não encontrado.');
 
-  // Verificar  senha atual estaa correta
+  // Verificar  senha atual esta correta
   const senhaValida = await bcrypt.compare(senhaAtual, usuario.senha);
   if (!senhaValida) throw new Error('Senha atual incorreta.');
 
@@ -51,7 +51,7 @@ const atualizarUsuario = async (usuarioId, nome, email, senhaAtual, novaSenha) =
   usuario.email = email;
   usuario.senha = senhaHash;
 
-  // Salva as alterações
+  // salvar as alterações
   await usuario.save();
 
   return usuario;

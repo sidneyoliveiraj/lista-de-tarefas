@@ -51,7 +51,7 @@ const Tarefa = sequelize.define('Tarefa', {
 Tarefa.belongsTo(Usuario, { foreignKey: 'usuarioId' });
 Usuario.hasMany(Tarefa, { foreignKey: 'usuarioId' });
 
-Tarefa.belongsTo(Categoria, { foreignKey: 'categoriaId' });
+Tarefa.belongsTo(Categoria, { foreignKey: 'categoriaId', as: 'categoria' });  // Alias corrigido
 Categoria.hasMany(Tarefa, { foreignKey: 'categoriaId' });
 
 module.exports = Tarefa;

@@ -1,8 +1,8 @@
 const Categoria = require('../models/categoria_model');
 
-// Função para criar uma nova categoria
+//criar uma nova categoria
 const criarCategoria = async (nome, usuarioId) => {
-  // Verifica se a categoria já existe para o usuário
+  // Verifica se a categoria ja existe para o usuário
   const categoriaExistente = await Categoria.findOne({ where: { nome, usuarioId } });
   if (categoriaExistente) throw new Error('Categoria já existe.');
 
@@ -14,20 +14,20 @@ const criarCategoria = async (nome, usuarioId) => {
   return categoria;
 };
 
-// Função para listar todas as categorias de um usuário
+//  listar todas as categorias de um usuário
 const listarCategorias = async (usuarioId) => {
   const categorias = await Categoria.findAll({ where: { usuarioId } });
   return categorias;
 };
 
-// Função para obter uma categoria específica por ID
+// obter uma categoria específica por ID
 const obterCategoriaPorId = async (categoriaId) => {
   const categoria = await Categoria.findByPk(categoriaId);
   if (!categoria) throw new Error('Categoria não encontrada.');
   return categoria;
 };
 
-// Função para atualizar uma categoria
+// atualizar uma categoria
 const atualizarCategoria = async (categoriaId, nome) => {
   const categoria = await Categoria.findByPk(categoriaId);
   if (!categoria) throw new Error('Categoria não encontrada.');
@@ -38,7 +38,7 @@ const atualizarCategoria = async (categoriaId, nome) => {
   return categoria;
 };
 
-// Função para excluir uma categoria
+// excluir uma categoria
 const excluirCategoria = async (categoriaId) => {
   const categoria = await Categoria.findByPk(categoriaId);
   if (!categoria) throw new Error('Categoria não encontrada.');

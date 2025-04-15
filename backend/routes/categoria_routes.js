@@ -1,7 +1,7 @@
 const { Router } = require('express');
 const router = Router();
 
-// Importa o controller de categoria
+// importa o controller de categoria
 const categoriaController = require('../controllers/categoria_controller');
 
 // Rotas de categoria

@@ -1,14 +1,12 @@
 const { Op } = require('sequelize');
 const Tarefa = require('../models/tarefa_model');
-const Categoria = require('../models/categoria_model');  // Adicionando a importação
+const Categoria = require('../models/categoria_model');
 
-// Função para criar uma nova tarefa
+// criar uma nova tarefa
 const criarTarefa = async ({ titulo, descricao, dataVencimento, prioridade, usuarioId, categoriaId }) => {
-  // Verificar se a categoria existe antes de associá-la
   const categoria = await Categoria.findByPk(categoriaId);
   if (!categoria) throw new Error('Categoria não encontrada.');
 
-  // Criando uma nova tarefa com todos os dados passados
   const tarefa = await Tarefa.create({ 
     titulo, 
     descricao, 
@@ -18,59 +16,75 @@ const criarTarefa = async ({ titulo, descricao, dataVencimento, prioridade, usua
     categoriaId 
   });
 
-  return tarefa;  // Retorna a tarefa criada
+  return tarefa;
 };
 
-// Função para listar todas as tarefas de um usuário
-const listarTarefas = async (usuarioId) => {
-  // Busca todas as tarefas de um usuário com a associação da categoria
+// listar todas as tarefas de um usuário
+const listarTarefas = async (usuarioId, { categoriaId, prioridade }) => {
+  const filter = { usuarioId };
+
+  if (categoriaId) filter.categoriaId = categoriaId;
+  if (prioridade) filter.prioridade = prioridade;
+
   const tarefas = await Tarefa.findAll({
-    where: { usuarioId },
+    where: filter,
     include: [{
       model: Categoria,
       as: 'categoria',
-      attributes: ['id', 'nome'], // Inclui a categoria junto com as tarefas
+      attributes: ['id', 'nome'],
     }],
   });
 
   return tarefas;
 };
 
-// Função para atualizar uma tarefa
-const atualizarTarefa = async (id, usuarioId, dados) => {
-  // Atualiza a tarefa com os dados fornecidos
-  await Tarefa.update(dados, { where: { id, usuarioId } });
+// visualizar uma tarefa por ID
+const listarTarefaPorId = async (id, usuarioId) => {
+  const tarefa = await Tarefa.findOne({
+    where: { id, usuarioId },
+    include: [{
+      model: Categoria,
+      as: 'categoria',
+      attributes: ['id', 'nome'],
+    }],
+  });
 
-  // Retorna a tarefa atualizada
+  if (!tarefa) throw new Error('Tarefa não encontrada ou não pertence ao usuário.');
+
+  return tarefa;
+};
+
+// atualizar uma tarefa
+const atualizarTarefa = async (id, usuarioId, dados) => {
+  await Tarefa.update(dados, { where: { id, usuarioId } });
   const tarefaAtualizada = await Tarefa.findOne({ where: { id, usuarioId } });
   return tarefaAtualizada;
 };
 
-// Função para excluir uma tarefa
+// excluir uma tarefa
 const excluirTarefa = async (id, usuarioId) => {
-  // Exclui a tarefa
   await Tarefa.destroy({ where: { id, usuarioId } });
-
-  return { message: 'Tarefa excluída com sucesso!' };  // Retorna mensagem de sucesso
+  return { message: 'Tarefa excluída com sucesso!' };
 };
 
-// Função para verificar tarefas vencidas ou próximas ao vencimento
+// verificar tarefas vencidas ou próximas ao vencimento TENHO QUE VERIFICAR ISSO
 const verificarTarefasVencidas = async (usuarioId) => {
   const tarefasVencidas = await Tarefa.findAll({
     where: {
       usuarioId,
       dataVencimento: {
-        [Op.lte]: new Date(),  // Verifica se a data de vencimento é anterior ou igual a data atual
+        [Op.lte]: new Date(),
       },
     },
   });
 
-  return tarefasVencidas;  // Retorna as tarefas vencidas ou próximas
+  return tarefasVencidas;
 };
 
 module.exports = { 
   criarTarefa, 
   listarTarefas, 
+  listarTarefaPorId, 
   atualizarTarefa, 
   excluirTarefa, 
   verificarTarefasVencidas 

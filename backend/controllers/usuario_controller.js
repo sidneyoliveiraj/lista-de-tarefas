@@ -1,6 +1,6 @@
 const { cadastrarUsuario, loginUsuario, atualizarUsuario } = require('../services/usuario_service');
 
-// Cadastro de novo usuário
+// cadastro de novo usuário
 exports.cadastro = async (req, res, next) => {
   const { nome, email, senha } = req.body;
   try {
@@ -11,7 +11,7 @@ exports.cadastro = async (req, res, next) => {
   }
 };
 
-// Login de usuário
+// login de usuário
 exports.login = async (req, res, next) => {
   const { email, senha } = req.body;
   try {
@@ -22,10 +22,10 @@ exports.login = async (req, res, next) => {
   }
 };
 
-// Atualizar dados do usuário
+// attdados do usuário
 exports.atualizarUsuario = async (req, res, next) => {
   const { nome, email, senhaAtual, novaSenha } = req.body;
-  const usuarioId = req.params.id;  // Pega o ID do usuário a partir da URL
+  const usuarioId = req.params.id;  
 
   try {
     const usuarioAtualizado = await atualizarUsuario(usuarioId, nome, email, senhaAtual, novaSenha);
