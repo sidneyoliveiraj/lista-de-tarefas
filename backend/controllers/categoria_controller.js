@@ -1,5 +1,7 @@
+// backend/controllers/categoria_controller.js
 const categoriaService = require('../services/categoria_service');
 
+// criar nova categoria
 exports.createCategory = async (req, res, next) => {
   const { nome, usuarioId } = req.body;
   try {
@@ -10,6 +12,7 @@ exports.createCategory = async (req, res, next) => {
   }
 };
 
+// listar todas as categorias de um usuário
 exports.getCategories = async (req, res, next) => {
   const usuarioId = req.params.usuarioId;
   try {
@@ -20,6 +23,7 @@ exports.getCategories = async (req, res, next) => {
   }
 };
 
+// obter uma categoria específica por ID
 exports.getCategoryById = async (req, res, next) => {
   const categoriaId = req.params.id;
   try {
@@ -30,6 +34,7 @@ exports.getCategoryById = async (req, res, next) => {
   }
 };
 
+// atualizar uma categoria existente
 exports.updateCategory = async (req, res, next) => {
   const categoriaId = req.params.id;
   const { nome } = req.body;
@@ -41,6 +46,7 @@ exports.updateCategory = async (req, res, next) => {
   }
 };
 
+// excluir uma categoria
 exports.deleteCategory = async (req, res, next) => {
   const categoriaId = req.params.id;
   try {

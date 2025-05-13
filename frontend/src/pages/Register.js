@@ -1,22 +1,25 @@
-// src/pages/Login.js
+// src/pages/Register.js
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import AuthService from '../services/AuthService';
-import './Login.css';
+import './Login.css'; // reaproveita o estilo do login
 
-export default function Login() {
+export default function Register() {
+  const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
     try {
-      await AuthService.login(email, senha);
-      navigate('/home');
+      await AuthService.register(nome, email, senha);
+      // após cadastro bem-sucedido, redireciona para o login
+      navigate('/login');
     } catch (err) {
-      setError('Email ou senha inválidos.');
+      // exibe a mensagem de erro retornada pelo servidor
+      setError(err.response?.data?.error || 'Erro ao cadastrar usuário.');
     }
   };
 
@@ -28,12 +31,21 @@ export default function Login() {
       <form onSubmit={handleSubmit} className="login-form">
         {error && <p className="error-message">{error}</p>}
 
-        <label htmlFor="email">Usuário:</label>
+        <label htmlFor="nome">Nome:</label>
+        <input
+          type="text"
+          id="nome"
+          value={nome}
+          onChange={e => setNome(e.target.value)}
+          required
+        />
+
+        <label htmlFor="email">E-mail:</label>
         <input
           type="email"
           id="email"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={e => setEmail(e.target.value)}
           required
         />
 
@@ -42,15 +54,14 @@ export default function Login() {
           type="password"
           id="senha"
           value={senha}
-          onChange={(e) => setSenha(e.target.value)}
+          onChange={e => setSenha(e.target.value)}
           required
         />
 
-        <button type="submit">Login</button>
+        <button type="submit">Cadastrar</button>
 
         <div className="links">
-          <Link to="/cadastro">Cadastra-se</Link>
-          <Link to="/recuperar-senha">Recuperar senha</Link>
+          <Link to="/login">← Voltar ao Login</Link>
         </div>
       </form>
     </div>

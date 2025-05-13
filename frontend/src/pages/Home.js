@@ -1,34 +1,69 @@
+// frontend/src/pages/Home.js
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import CategoryService from '../services/CategoryService';
 import AuthService from '../services/AuthService';
-import '../App.css';
+import CategoryService from '../services/CategoryService';
+import './Home.css';   // crie este CSS conforme abaixo
 
 export default function Home() {
-  const [categorias, setCategorias] = useState([]);
-  const [novaCategoria, setNovaCategoria] = useState('');
-  const usuarioId = localStorage.getItem('usuarioId');
   const navigate = useNavigate();
+  const usuarioId = localStorage.getItem('usuarioId');
 
+  // estados
+  const [categorias, setCategorias] = useState([]);
+  const [busca, setBusca] = useState('');
+  const [modoAddCat, setModoAddCat] = useState(false);
+  const [novaCategoria, setNovaCategoria] = useState('');
+
+  // função para carregar as categorias do back
   const fetchCategories = useCallback(async () => {
-    const categorias = await CategoryService.getAll(usuarioId);
-    setCategorias(categorias);
+    try {
+      const data = await CategoryService.getAll(usuarioId);
+      setCategorias(data);
+    } catch (err) {
+      console.error('Erro ao buscar categorias:', err);
+    }
   }, [usuarioId]);
 
+  // ao montar, busca as categorias
   useEffect(() => {
     fetchCategories();
   }, [fetchCategories]);
 
+  // adicionar categoria
   const handleAddCategory = async () => {
-    await CategoryService.create({ nome: novaCategoria, usuarioId });
-    setNovaCategoria('');
-    fetchCategories();
+    if (!novaCategoria.trim()) return;
+    try {
+      await CategoryService.create({ nome: novaCategoria.trim(), usuarioId });
+      setNovaCategoria('');
+      setModoAddCat(false);
+      fetchCategories();
+    } catch (err) {
+      console.error('Erro ao criar categoria:', err);
+    }
   };
 
+  // deletar categoria
+  const handleDeleteCategory = async (id) => {
+    if (!window.confirm('Deseja realmente excluir esta categoria?')) return;
+    try {
+      await CategoryService.remove(id);
+      fetchCategories();
+    } catch (err) {
+      console.error('Erro ao deletar categoria:', err);
+    }
+  };
+
+  // logout
   const logout = () => {
     AuthService.logout();
     navigate('/login');
   };
+
+  // filtro local de busca
+  const categoriasFiltradas = categorias.filter(cat =>
+    cat.nome.toLowerCase().includes(busca.toLowerCase())
+  );
 
   return (
     <div className="home-container">
@@ -38,24 +73,47 @@ export default function Home() {
       </header>
 
       <div className="search-add">
+        <button className="btn-circle" onClick={() => setModoAddCat(!modoAddCat)}>＋</button>
         <input
           type="text"
-          placeholder="Nova categoria"
-          value={novaCategoria}
-          onChange={(e) => setNovaCategoria(e.target.value)}
+          placeholder="Buscar categoria..."
+          value={busca}
+          onChange={e => setBusca(e.target.value)}
         />
-        <button onClick={handleAddCategory}>+</button>
       </div>
 
+      {modoAddCat && (
+        <div className="form-add-category">
+          <input
+            type="text"
+            placeholder="Nova categoria"
+            value={novaCategoria}
+            onChange={e => setNovaCategoria(e.target.value)}
+          />
+          <button onClick={handleAddCategory}>Adicionar</button>
+        </div>
+      )}
+
       <div className="lista-categorias">
-        {categorias.map((cat) => (
+        {categoriasFiltradas.map(cat => (
           <div key={cat.id} className="categoria">
-            <h2>{cat.nome}</h2>
-            <ul>
-              <li>Ainda não há tarefas.</li>
-            </ul>
+            <h2>
+              {cat.nome}
+              <button
+                className="btn-delete"
+                onClick={() => handleDeleteCategory(cat.id)}
+                title="Excluir categoria"
+              >
+                🗑
+              </button>
+            </h2>
+            {/* Aqui virá a listagem de tarefas de cada categoria, mais à frente */}
           </div>
         ))}
+
+        {categoriasFiltradas.length === 0 && (
+          <p>Nenhuma categoria encontrada.</p>
+        )}
       </div>
     </div>
   );
