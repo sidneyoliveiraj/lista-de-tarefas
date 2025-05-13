@@ -3,23 +3,23 @@ const express = require('express');
 const router = express.Router();
 const categoriaController = require('../controllers/categoria_controller');
 
-// listar todas as categorias de um usuário
+// Obter uma categoria específica por ID (para um dado usuário)
+// GET /api/categorias/:usuarioId/:id
+router.get('/:usuarioId/:id', categoriaController.getCategoryById);
+
+// Listar todas as categorias de um usuário
 // GET /api/categorias/:usuarioId
 router.get('/:usuarioId', categoriaController.getCategories);
 
-// obter uma categoria específica por ID
-// GET /api/categorias/:id
-router.get('/detalhe/:id', categoriaController.getCategoryById);
-
-// criar nova categoria
+// Criar nova categoria
 // POST /api/categorias
 router.post('/', categoriaController.createCategory);
 
-// atualizar uma categoria existente
+// Atualizar uma categoria existente
 // PUT /api/categorias/:id
 router.put('/:id', categoriaController.updateCategory);
 
-// excluir uma categoria
+// Excluir uma categoria
 // DELETE /api/categorias/:id
 router.delete('/:id', categoriaController.deleteCategory);
 

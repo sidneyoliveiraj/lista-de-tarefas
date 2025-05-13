@@ -1,58 +1,35 @@
 // frontend/src/pages/Home.js
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import AuthService from '../services/AuthService';
 import CategoryService from '../services/CategoryService';
-import './Home.css';   // crie este CSS conforme abaixo
+import TaskService from '../services/TaskService';
+import AuthService from '../services/AuthService';
+import '../App.css';
 
 export default function Home() {
-  const navigate = useNavigate();
-  const usuarioId = localStorage.getItem('usuarioId');
-
-  // estados
   const [categorias, setCategorias] = useState([]);
-  const [busca, setBusca] = useState('');
-  const [modoAddCat, setModoAddCat] = useState(false);
   const [novaCategoria, setNovaCategoria] = useState('');
+  const [novaTarefa, setNovaTarefa] = useState({});         // para criação
+  const [editando, setEditando] = useState({});             // { [tarefaId]: texto }
+  const [filtro, setFiltro] = useState('');
+  const usuarioId = localStorage.getItem('usuarioId');
+  const navigate = useNavigate();
 
-  // função para carregar as categorias do back
+  // busca categorias + tarefas
   const fetchCategories = useCallback(async () => {
-    try {
-      const data = await CategoryService.getAll(usuarioId);
-      setCategorias(data);
-    } catch (err) {
-      console.error('Erro ao buscar categorias:', err);
-    }
+    const cats = await CategoryService.getAll(usuarioId);
+    const withTasks = await Promise.all(
+      cats.map(async cat => {
+        const tasks = await TaskService.list(usuarioId, cat.id);
+        return { ...cat, tarefas: tasks };
+      })
+    );
+    setCategorias(withTasks);
   }, [usuarioId]);
 
-  // ao montar, busca as categorias
   useEffect(() => {
     fetchCategories();
   }, [fetchCategories]);
-
-  // adicionar categoria
-  const handleAddCategory = async () => {
-    if (!novaCategoria.trim()) return;
-    try {
-      await CategoryService.create({ nome: novaCategoria.trim(), usuarioId });
-      setNovaCategoria('');
-      setModoAddCat(false);
-      fetchCategories();
-    } catch (err) {
-      console.error('Erro ao criar categoria:', err);
-    }
-  };
-
-  // deletar categoria
-  const handleDeleteCategory = async (id) => {
-    if (!window.confirm('Deseja realmente excluir esta categoria?')) return;
-    try {
-      await CategoryService.remove(id);
-      fetchCategories();
-    } catch (err) {
-      console.error('Erro ao deletar categoria:', err);
-    }
-  };
 
   // logout
   const logout = () => {
@@ -60,9 +37,63 @@ export default function Home() {
     navigate('/login');
   };
 
-  // filtro local de busca
+  // adicionar categoria
+  const handleAddCategory = async () => {
+    if (!novaCategoria.trim()) return;
+    await CategoryService.create({ nome: novaCategoria, usuarioId });
+    setNovaCategoria('');
+    fetchCategories();
+  };
+
+  // adicionar tarefa
+  const handleAddTask = async categoriaId => {
+    const titulo = (novaTarefa[categoriaId] || '').trim();
+    if (!titulo) return;
+    await TaskService.create({ titulo, usuarioId, categoriaId });
+    setNovaTarefa(prev => ({ ...prev, [categoriaId]: '' }));
+    fetchCategories();
+  };
+
+  // toggle de concluído
+  const toggleDone = async tarefa => {
+    await TaskService.update(tarefa.id, usuarioId, { status: !tarefa.status });
+    fetchCategories();
+  };
+
+  // excluir tarefa
+  const deleteTask = async tarefaId => {
+    await TaskService.remove(tarefaId);
+    fetchCategories();
+  };
+
+  // iniciar edição
+  const startEdit = (tarefa) => {
+    setEditando(prev => ({ ...prev, [tarefa.id]: tarefa.titulo }));
+  };
+  // cancelar edição
+  const cancelEdit = (tarefaId) => {
+    setEditando(prev => {
+      const next = { ...prev };
+      delete next[tarefaId];
+      return next;
+    });
+  };
+  // salvar edição
+  const saveEdit = async (tarefa) => {
+    const novoTitulo = (editando[tarefa.id] || '').trim();
+    if (!novoTitulo) return;
+    await TaskService.update(tarefa.id, usuarioId, { titulo: novoTitulo });
+    setEditando(prev => {
+      const next = { ...prev };
+      delete next[tarefa.id];
+      return next;
+    });
+    fetchCategories();
+  };
+
+  // filtro em memória
   const categoriasFiltradas = categorias.filter(cat =>
-    cat.nome.toLowerCase().includes(busca.toLowerCase())
+    cat.nome.toLowerCase().includes(filtro.toLowerCase())
   );
 
   return (
@@ -72,48 +103,91 @@ export default function Home() {
         <button onClick={logout}>Sair</button>
       </header>
 
-      <div className="search-add">
-        <button className="btn-circle" onClick={() => setModoAddCat(!modoAddCat)}>＋</button>
+      {/* criar nova categoria */}
+      <div className="form-add-category">
+        <input
+          type="text"
+          placeholder="Nova categoria"
+          value={novaCategoria}
+          onChange={e => setNovaCategoria(e.target.value)}
+        />
+        <button onClick={handleAddCategory}>Adicionar Categoria</button>
+      </div>
+
+      {/* busca de categorias */}
+      <div className="search-add" style={{ marginTop: 10 }}>
         <input
           type="text"
           placeholder="Buscar categoria..."
-          value={busca}
-          onChange={e => setBusca(e.target.value)}
+          value={filtro}
+          onChange={e => setFiltro(e.target.value)}
         />
       </div>
 
-      {modoAddCat && (
-        <div className="form-add-category">
-          <input
-            type="text"
-            placeholder="Nova categoria"
-            value={novaCategoria}
-            onChange={e => setNovaCategoria(e.target.value)}
-          />
-          <button onClick={handleAddCategory}>Adicionar</button>
-        </div>
-      )}
-
+      {/* listagem */}
       <div className="lista-categorias">
         {categoriasFiltradas.map(cat => (
           <div key={cat.id} className="categoria">
-            <h2>
-              {cat.nome}
-              <button
-                className="btn-delete"
-                onClick={() => handleDeleteCategory(cat.id)}
-                title="Excluir categoria"
-              >
-                🗑
-              </button>
-            </h2>
-            {/* Aqui virá a listagem de tarefas de cada categoria, mais à frente */}
+            <h2>{cat.nome}</h2>
+
+            {/* nova tarefa */}
+            <div className="search-add">
+              <input
+                type="text"
+                placeholder="Nova tarefa"
+                value={novaTarefa[cat.id] || ''}
+                onChange={e =>
+                  setNovaTarefa(prev => ({ ...prev, [cat.id]: e.target.value }))
+                }
+              />
+              <button onClick={() => handleAddTask(cat.id)}>+</button>
+            </div>
+
+            {/* tarefas */}
+            <ul>
+              {cat.tarefas.map(task => (
+                <li key={task.id} style={{ display: 'flex', alignItems: 'center' }}>
+                  {/* checkbox */}
+                  <input
+                    type="checkbox"
+                    checked={task.status}
+                    onChange={() => toggleDone(task)}
+                  />
+
+                  {/* se estiver editando, mostra input + botões */}
+                  {editando[task.id] != null ? (
+                    <>
+                      <input
+                        type="text"
+                        value={editando[task.id]}
+                        onChange={e =>
+                          setEditando(prev => ({ ...prev, [task.id]: e.target.value }))
+                        }
+                        style={{ marginLeft: 8, flexGrow: 1 }}
+                      />
+                      <button onClick={() => saveEdit(task)}>Salvar</button>
+                      <button onClick={() => cancelEdit(task.id)}>Cancelar</button>
+                    </>
+                  ) : (
+                    <>
+                      <span
+                        style={{
+                          marginLeft: 8,
+                          textDecoration: task.status ? 'line-through' : 'none',
+                          flexGrow: 1
+                        }}
+                      >
+                        {task.titulo}
+                      </span>
+                      <button onClick={() => startEdit(task)}>✏️</button>
+                      <button onClick={() => deleteTask(task.id)}>🗑️</button>
+                    </>
+                  )}
+                </li>
+              ))}
+            </ul>
           </div>
         ))}
-
-        {categoriasFiltradas.length === 0 && (
-          <p>Nenhuma categoria encontrada.</p>
-        )}
       </div>
     </div>
   );
