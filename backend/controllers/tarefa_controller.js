@@ -32,10 +32,10 @@ exports.listar = async (req, res, next) => {
 // Visualizar uma tarefa por ID
 exports.visualizar = async (req, res, next) => {
   const tarefaId = req.params.id;
-  const usuarioId = req.params.usuarioId; // Adicionando o usuarioId na requisição
+  const usuarioId = req.params.usuarioId; 
 
   try {
-    const tarefa = await tarefaService.listarTarefaPorId(tarefaId, usuarioId); // Chamando o serviço com usuário e id
+    const tarefa = await tarefaService.listarTarefaPorId(tarefaId, usuarioId); 
     res.json(tarefa); // Retorna a tarefa encontrada
   } catch (error) {
     next(error);

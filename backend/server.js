@@ -1,38 +1,39 @@
-require('dotenv').config();  
-
+require('dotenv').config();
 const express = require('express');
+const cors = require('cors');
 const app = express();
 
-// Importa Sequelize
+// importa conexão Sequelize
 const sequelize = require('./config/database');
-
-// tratamento de erros
+// importa middleware de erro
 const errorMiddleware = require('./middleware/error_middleware');
 
-// Importa as rotas
+// importa rotas
 const autenticacaoRoutes = require('./routes/autenticacao_routes');
-const usuarioRoutes = require('./routes/usuario_routes');
-const categoriaRoutes = require('./routes/categoria_routes');
-const tarefaRoutes = require('./routes/tarefa_routes');
+const usuarioRoutes       = require('./routes/usuario_routes');
+const categoriaRoutes     = require('./routes/categoria_routes');
+const tarefaRoutes        = require('./routes/tarefa_routes');
 
-// Middlewares para interpretar JSON 
+// middlewares
+app.use(cors({ origin: 'http://localhost:3000' })); // libera o React
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Rotas 
+// rotas
 app.use('/api/autenticacao', autenticacaoRoutes);
-app.use('/api/usuarios', usuarioRoutes);
-app.use('/api/categorias', categoriaRoutes);
-app.use('/api/tarefas', tarefaRoutes);
+app.use('/api/usuarios',       usuarioRoutes);
+app.use('/api/categorias',     categoriaRoutes);
+app.use('/api/tarefas',        tarefaRoutes);
 
-// erros
+// tratamento de erros
 app.use(errorMiddleware);
 
-// Inicia o servidor
-sequelize.sync({ alter: true }).then(() => {
-    app.listen(process.env.PORT || 3000, () => {
-        console.log('Servidor rodando na porta 3000 e tabelas sincronizadas com sucesso.');
+// sincroniza e inicia o servidor
+const PORT = process.env.PORT || 3001;
+sequelize.sync({ alter: true })
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log(`🚀 Backend rodando na porta ${PORT}`);
     });
-}).catch((error) => {
-    console.error('Erro ao sincronizar com o banco de dados:', error);
-});
+  })
+  .catch(err => console.error('Erro ao sincronizar:', err));

@@ -1,0 +1,48 @@
+.home-container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.header {
+  background-color: #1d38ff;
+  color: white;
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.search-add {
+  margin-top: 20px;
+  display: flex;
+  gap: 10px;
+}
+
+.lista-categorias {
+  margin-top: 20px;
+}
+
+.categoria {
+  background-color: #eee;
+  margin-bottom: 15px;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.categoria h2 {
+  background-color: #3d5afe;
+  color: white;
+  padding: 8px;
+  border-radius: 3px;
+  margin: 0;
+}
+
+.categoria ul {
+  list-style: none;
+  padding: 0;
+}
+
+.categoria li {
+  padding: 5px 0;
+  border-bottom: 1px solid #ddd;
+}

@@ -1,6 +1,6 @@
 const Usuario = require('../models/usuario_model');
 const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');  // Importar JWT para gerar o token de login
+const jwt = require('jsonwebtoken');  
 
 //cadastrar um novo usuário
 const cadastrarUsuario = async (nome, email, senha) => {
@@ -27,7 +27,7 @@ const loginUsuario = async (email, senha) => {
   const senhaValida = await bcrypt.compare(senha, usuario.senha);
   if (!senhaValida) throw new Error('Email ou senha incorretos.');
 
-  // Gerar um token JWT 
+  // Gerar um token 
   const token = jwt.sign({ id: usuario.id, email: usuario.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
   return { usuario, token };  
@@ -43,7 +43,7 @@ const atualizarUsuario = async (usuarioId, nome, email, senhaAtual, novaSenha) =
   const senhaValida = await bcrypt.compare(senhaAtual, usuario.senha);
   if (!senhaValida) throw new Error('Senha atual incorreta.');
 
-  // atualize a senha, senão mantenha a atual
+  // atualize a senha
   const senhaHash = novaSenha ? await bcrypt.hash(novaSenha, 10) : usuario.senha;
 
   // Atualizando os dados do usuário

@@ -6,7 +6,7 @@ const tarefaController = require('../controllers/tarefa_controller');
 router.post('/', tarefaController.criar);
 
 // listar todas as tarefas de um usuário
-router.get('/:usuarioId', tarefaController.listar);  // Agora inclui filtro de categoria e prioridade via query params
+router.get('/:usuarioId', tarefaController.listar);  
 
 // visualizar tarefa por ID
 router.get('/:usuarioId/:id', tarefaController.visualizar);
