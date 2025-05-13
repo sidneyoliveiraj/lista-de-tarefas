@@ -1,54 +1,73 @@
+/* frontend/src/App.css */
 .home-container {
   max-width: 800px;
-  margin: 2rem auto;
+  margin: 20px auto;
 }
 
 .header {
   background-color: #1d38ff;
   color: white;
-  padding: 1rem;
+  padding: 16px;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.form-add-category {
-  margin: 1.5rem 0;
+.form-add-category,
+.form-search-category {
+  margin: 12px 0;
   display: flex;
-  gap: 0.5rem;
+  gap: 8px;
 }
 
-.lista-categorias .categoria {
-  background-color: #eee;
-  padding: 1rem;
-  border-radius: 5px;
-  margin-bottom: 1rem;
+.lista-categorias {
+  margin-top: 16px;
+}
+
+.categoria {
+  background-color: #f0f0f0;
+  padding: 12px;
+  border-radius: 4px;
+  margin-bottom: 12px;
 }
 
 .categoria h2 {
   background-color: #3d5afe;
   color: white;
-  margin: 0;
-  padding: 0.5rem;
-  border-radius: 3px;
+  padding: 8px;
+  border-radius: 4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0 0 8px 0;
 }
 
-.categoria ul {
+.form-add-task {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.form-add-task input {
+  flex-grow: 1;      /* faz o campo crescer */
+}
+
+.task-list {
   list-style: none;
   padding: 0;
-  margin-top: 0.5rem;
 }
 
-.categoria li {
+.task-item {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.25rem 0;
+  gap: 8px;
+  margin-bottom: 6px;
 }
 
-.categoria li button {
-  margin-left: auto;
-  background: none;
-  border: none;
-  cursor: pointer;
+.task-item .edit-input {
+  flex-grow: 1;
+}
+
+.task-item .task-title {
+  flex-grow: 1;
 }

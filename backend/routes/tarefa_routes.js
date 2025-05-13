@@ -1,20 +1,24 @@
+// backend/routes/tarefa_routes.js
 const express = require('express');
-const router = express.Router();
-const tarefaController = require('../controllers/tarefa_controller');
+const router  = express.Router();
+const ctrl    = require('../controllers/tarefa_controller');
 
-// criar uma tarefa
-router.post('/', tarefaController.criar);
+//  Criar tarefa
+router.post('/', ctrl.criar);
 
-// listar todas as tarefas de um usuário
-router.get('/:usuarioId', tarefaController.listar);  
+//  Listar todas as tarefas de um usuário (opcionalmente filtradas por categoria)
+router.get('/:usuarioId', ctrl.listar);
 
-// visualizar tarefa por ID
-router.get('/:usuarioId/:id', tarefaController.visualizar);
+//  Visualizar tarefa por ID
+router.get('/:usuarioId/:id', ctrl.visualizar);
 
-// att uma tarefa
-router.put('/:id', tarefaController.atualizar);
+//  Atualizar tarefa
+router.put('/:id', ctrl.atualizar);
 
-// excluir uma tarefa
-router.delete('/:id', tarefaController.excluir);
+// Excluir tarefa
+router.delete('/:id', ctrl.excluir);
+
+// Notificações
+router.get('/notificacoes/:usuarioId', ctrl.notificarTarefasVencidas);
 
 module.exports = router;

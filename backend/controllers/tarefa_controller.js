@@ -1,92 +1,67 @@
+// backend/controllers/tarefa_controller.js
 const tarefaService = require('../services/tarefa_service');
 
-// criar nova tarefa
+// Criar nova tarefa
 exports.criar = async (req, res, next) => {
   try {
-    const { titulo, descricao, dataVencimento, prioridade, usuarioId, categoriaId } = req.body;
-    const tarefa = await tarefaService.criarTarefa({ 
-      titulo, 
-      descricao, 
-      dataVencimento, 
-      prioridade, 
-      usuarioId, 
-      categoriaId 
-    });
-    res.status(201).json(tarefa); // Retorna a tarefa criada
+    const tarefa = await tarefaService.criarTarefa(req.body);
+    res.status(201).json(tarefa);
   } catch (error) {
     next(error);
   }
 };
 
-// listar todas as tarefas de um usuário
+// Listar todas as tarefas de um usuário
 exports.listar = async (req, res, next) => {
   try {
-    const { categoriaId, prioridade } = req.query;  // Pegando categoriaId e prioridade da query
-    const tarefas = await tarefaService.listarTarefas(req.params.usuarioId, { categoriaId, prioridade });
-    res.json(tarefas); // Retorna todas as tarefas
+    const usuarioId = req.params.usuarioId;
+    const filtros   = { categoriaId: req.query.categoriaId, prioridade: req.query.prioridade };
+    const tarefas   = await tarefaService.listarTarefas(usuarioId, filtros);
+    res.json(tarefas);
   } catch (error) {
     next(error);
   }
 };
 
-// Visualizar uma tarefa por ID
+//  Visualizar uma tarefa por ID
 exports.visualizar = async (req, res, next) => {
-  const tarefaId = req.params.id;
-  const usuarioId = req.params.usuarioId; 
-
   try {
-    const tarefa = await tarefaService.listarTarefaPorId(tarefaId, usuarioId); 
-    res.json(tarefa); // Retorna a tarefa encontrada
+    const tarefa = await tarefaService.listarTarefaPorId(req.params.id, req.params.usuarioId);
+    res.json(tarefa);
   } catch (error) {
     next(error);
   }
 };
 
-// atualizar uma tarefa
+// Atualizar qualquer campo de uma tarefa
 exports.atualizar = async (req, res, next) => {
   try {
-    const { titulo, descricao, dataVencimento, prioridade, usuarioId, categoriaId } = req.body;
-    const tarefaId = req.params.id;
-
-    const tarefaAtualizada = await tarefaService.atualizarTarefa(tarefaId, usuarioId, { 
-      titulo, 
-      descricao, 
-      dataVencimento, 
-      prioridade, 
-      usuarioId, 
-      categoriaId 
-    });
-
+    const tarefaAtualizada = await tarefaService.atualizarTarefa(
+      req.params.id,
+      req.body.usuarioId,
+      req.body
+    );
     res.json({ message: 'Tarefa atualizada com sucesso.', tarefa: tarefaAtualizada });
   } catch (error) {
     next(error);
   }
 };
 
-// exxcluir uma tarefa
+// Excluir uma tarefa
 exports.excluir = async (req, res, next) => {
-  const { id } = req.params;
-  const { confirmarExclusao } = req.body;
-
-  if (!confirmarExclusao) {
-    return res.status(400).json({ message: 'Confirmação de exclusão necessária.' });
-  }
-
   try {
-    await tarefaService.excluirTarefa(id);
+    await tarefaService.excluirTarefa(req.params.id);
     res.json({ message: 'Tarefa excluída com sucesso.' });
   } catch (error) {
     next(error);
   }
 };
 
-// Verificar tarefas vencidas ou próximas do vencimento TENHO QUE VER ISSO DEPOIS
+// Notificar tarefas vencidas
 exports.notificarTarefasVencidas = async (req, res, next) => {
-  const usuarioId = req.params.usuarioId;
-
   try {
-    const tarefasVencidas = await tarefaService.verificarTarefasVencidas(usuarioId);
-    res.json({ tarefasVencidas });
+    const tarefas = await tarefaService.verificarTarefasVencidas(req.params.usuarioId);
+    res.json({ tarefasVencidas: tarefas });
   } catch (error) {
     next(error);
   }

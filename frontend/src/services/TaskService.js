@@ -3,26 +3,30 @@ import axios from 'axios';
 
 const API_URL = 'http://localhost:3001/api/tarefas';
 
+// 1️⃣ Listar todas as tarefas de um usuário (filtro opcional por categoria)
 async function list(usuarioId, categoriaId = null) {
-  const url = `${API_URL}/${usuarioId}`;
-  const response = await axios.get(url, { params: { categoriaId } });
+  const response = await axios.get(`${API_URL}/${usuarioId}`, {
+    params: { categoriaId }
+  });
   return response.data;
 }
 
-async function create({ titulo, descricao = '', dataVencimento = null, prioridade = null, usuarioId, categoriaId }) {
-  const response = await axios.post(API_URL, { titulo, descricao, dataVencimento, prioridade, usuarioId, categoriaId });
+// 2️⃣ Criar nova tarefa
+async function create({ titulo, usuarioId, categoriaId }) {
+  const response = await axios.post(API_URL, { titulo, usuarioId, categoriaId });
   return response.data;
 }
 
+// 3️⃣ Atualizar qualquer campo da tarefa 
 async function update(id, usuarioId, updates) {
-  const response = await axios.put(`${API_URL}/${id}`, { ...updates, usuarioId });
+  const response = await axios.put(`${API_URL}/${id}`, { usuarioId, ...updates });
   return response.data;
 }
 
+// 4️⃣ Excluir tarefa 
 async function remove(id) {
-  const response = await axios.delete(`${API_URL}/${id}`, { data: { confirmarExclusao: true } });
+  const response = await axios.delete(`${API_URL}/${id}`);
   return response.data;
 }
 
-const TaskService = { list, create, update, remove };
-export default TaskService;
+export default { list, create, update, remove };
